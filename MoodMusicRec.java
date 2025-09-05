@@ -1,9 +1,13 @@
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.CardLayout;
 import java.io.*;
-import java.util.*;
 import java.util.prefs.Preferences;
 import javax.sound.sampled.*;
+import java.util.List;
+import java.util.ArrayList;
 
 public class MoodMusicRec {
     static class Song {
@@ -20,7 +24,6 @@ public class MoodMusicRec {
     private final List<Song> songs = new ArrayList<>();
     private final JTextArea resultArea = new JTextArea();
     private final Preferences prefs = Preferences.userNodeForPackage(MoodMusicRec.class);
-
     private final CardLayout cardLayout = new CardLayout();
     private final JPanel mainPanel = new JPanel(cardLayout);
 
@@ -80,11 +83,11 @@ public class MoodMusicRec {
         frame.setVisible(true);
 
         // --- Actions ---
-        startButton.addActionListener(e -> cardLayout.show(mainPanel, "rec"));
-        backButton.addActionListener(e -> cardLayout.show(mainPanel, "home"));
-        lastButton.addActionListener(e -> showLastMood());
+        startButton.addActionListener(_ -> cardLayout.show(mainPanel, "rec"));
+        backButton.addActionListener(_ -> cardLayout.show(mainPanel, "home"));
+        lastButton.addActionListener(_ -> showLastMood());
 
-        generateButton.addActionListener(e -> {
+        generateButton.addActionListener(_ -> {
             String mood = moodField.getText().trim();
             if (!mood.isEmpty()) {
                 showRecommendations(mood);
@@ -110,7 +113,6 @@ public class MoodMusicRec {
     private void showRecommendations(String mood) {
         StringBuilder sb = new StringBuilder("Results for: " + mood + "\n\n");
         List<Song> matches = new ArrayList<>();
-
         for (Song s : songs) {
             if (s.mood.equalsIgnoreCase(mood)) {
                 sb.append("• ").append(s.title).append(" - ").append(s.artist).append("\n");
