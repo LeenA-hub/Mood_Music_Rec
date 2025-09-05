@@ -31,6 +31,7 @@ public class MoodMusicRec {
 
         if (songs.isEmpty()) {
             System.out.println("No songs loaded. Make sure songs.csv is in the same folder!");
+            sc.close();
             return;
         }
 
