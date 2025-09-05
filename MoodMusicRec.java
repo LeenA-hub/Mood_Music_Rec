@@ -1,118 +1,101 @@
-import java.io.*;
-import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MoodMusicRec {
 
     static class Song {
-        String title;
-        String artist;
-        String mood;
+        String title, artist, mood;
 
         Song(String title, String artist, String mood) {
             this.title = title;
             this.artist = artist;
-            this.mood = mood.toLowerCase();
+            this.mood = mood.trim().toLowerCase();
         }
     }
 
-    // ANSI colors for console
-    public static final String RESET = "\u001B[0m";
-    public static final String RED = "\u001B[31m";
-    public static final String GREEN = "\u001B[32m";
-    public static final String YELLOW = "\u001B[33m";
-    public static final String BLUE = "\u001B[34m";
-    public static final String PURPLE = "\u001B[35m";
-    public static final String CYAN = "\u001B[36m";
+    private final List<Song> songs = new ArrayList<>();
+    private final JTextArea resultArea = new JTextArea();
 
-    public static void main(String[] args) throws InterruptedException {
-        Scanner sc = new Scanner(System.in);
-        List<Song> songs = loadSongs("songs.csv");
-
-        if (songs.isEmpty()) {
-            System.out.println("No songs loaded. Make sure songs.csv is in the same folder!");
-            sc.close();
-            return;
-        }
-
-        System.out.println("Welcome to Mood-Based Music Recommender!");
-        System.out.print("Enter your current mood (happy, sad, chill, energetic): ");
-        String mood = sc.nextLine().toLowerCase();
-
-        List<Song> recommended = new ArrayList<>();
-        for (Song s : songs) {
-            if (s.mood.equals(mood)) {
-                recommended.add(s);
-            }
-        }
-
-        if (recommended.isEmpty()) {
-            System.out.println("Sorry, no songs found for that mood yet.");
-        } else {
-            System.out.println("\n🎵 Recommended songs for mood: " + mood.toUpperCase() + " 🎵\n");
-            for (int i = 0; i < recommended.size(); i++) {
-                Song s = recommended.get(i);
-                System.out.println((i + 1) + ". " + s.title + " - " + s.artist);
-            }
-        }
-
-        // Mood animation
-        System.out.println("\nVisualizing your mood:\n");
-        animateMood(mood);
-
-        System.out.println("\nEnjoy your music! 🎶");
-        sc.close();
+    public MoodMusicRec() {
+        loadSongs("songs.csv");
+        createUI();
     }
 
-    private static List<Song> loadSongs(String fileName) {
-        List<Song> list = new ArrayList<>();
+    private void createUI() {
+        JFrame frame = new JFrame("Mood Music Recommender");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(300, 200);
+        frame.setLayout(new BorderLayout());
+
+        // Top panel: label + text field + button
+        JPanel inputPanel = new JPanel();
+        inputPanel.setLayout(new FlowLayout());
+
+        JLabel moodLabel = new JLabel("Enter your mood:");
+        JTextField moodField = new JTextField(10);
+        JButton generateButton = new JButton("Generate");
+
+        inputPanel.add(moodLabel);
+        inputPanel.add(moodField);
+        inputPanel.add(generateButton);
+
+        // Results area
+        resultArea.setEditable(false);
+        resultArea.setLineWrap(true);
+
+        generateButton.addActionListener(event -> {
+            String mood = moodField.getText();
+            showRecommendations(mood);
+        });
+
+        frame.add(inputPanel, BorderLayout.NORTH);
+        frame.add(new JScrollPane(resultArea), BorderLayout.CENTER);
+
+        frame.setVisible(true);
+    }
+
+    private void loadSongs(String fileName) {
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
-            String line;
             br.readLine(); // skip header
+            String line;
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(",");
                 if (parts.length == 3) {
-                    list.add(new Song(parts[0], parts[1], parts[2]));
+                    songs.add(new Song(parts[0], parts[1], parts[2]));
                 }
             }
         } catch (IOException e) {
-            System.out.println("Error reading file: " + e.getMessage());
+            resultArea.setText("Error loading songs file.");
         }
-        return list;
     }
 
-    private static void animateMood(String mood) throws InterruptedException {
-        String[] symbols;
-        String color;
-
-        switch (mood) {
-            case "happy":
-                symbols = new String[] { "😄", "😁", "😆" };
-                color = YELLOW;
-                break;
-            case "sad":
-                symbols = new String[] { "☁️", "🌧️", "💧" };
-                color = BLUE;
-                break;
-            case "chill":
-                symbols = new String[] { "🌊", "🍃", "🕊️" };
-                color = CYAN;
-                break;
-            case "energetic":
-                symbols = new String[] { "⚡", "🔥", "💥" };
-                color = RED;
-                break;
-            default:
-                symbols = new String[] { "✨", "🌟", "💫" };
-                color = PURPLE;
+    private void showRecommendations(String mood) {
+        if (mood == null || mood.isBlank()) {
+            resultArea.setText("Please enter a mood.");
+            return;
         }
 
-        // Animate 10 frames
-        for (int i = 0; i < 10; i++) {
-            int idx = ThreadLocalRandom.current().nextInt(symbols.length);
-            System.out.print(color + symbols[idx] + " " + RESET);
-            Thread.sleep(300);
+        StringBuilder sb = new StringBuilder();
+        for (Song s : songs) {
+            if (s.mood.equalsIgnoreCase(mood.trim())) {
+                sb.append(s.title).append(" - ").append(s.artist).append("\n");
+            }
         }
-        System.out.println();
+
+        if (sb.length() == 0) {
+            resultArea.setText("No songs found for mood: " + mood);
+        } else {
+            resultArea.setText(sb.toString());
+        }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(MoodMusicRec::new);
     }
 }
