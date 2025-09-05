@@ -1,133 +1,131 @@
 import javax.swing.*;
 import java.awt.*;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.awt.event.*;
+import java.io.*;
+import java.net.URI;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MoodMusicRec {
-    private JFrame frame;
-    private JButton playBtn, nextBtn, prevBtn;
-    private JLabel songLabel;
-    private List<Track> playlist;
-    private int currentIndex = 0;
-    private Thread playThread;
+    private JFrame frame; // main app window
+    private JPanel listPanel; // songs display
+    private JTextField moodInput; // text field where user type the mood
 
-    public MoodMusicRec(List<Track> playlist) {
-        this.playlist = playlist;
+    public MoodMusicRec() {
         initUI();
     }
 
+    private static void showStartScreen() {
+        JFrame startFrame = new JFrame("Welcome");
+        startFrame.setSize(400, 300);
+        startFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        startFrame.getContentPane().setBackground(Color.PINK);
+        startFrame.setLayout(new BorderLayout());
+
+        JButton startBtn = new JButton("Start");
+        startBtn.setFont(new Font("Arial", Font.BOLD, 22));
+        startBtn.setBackground(Color.WHITE);
+
+        startFrame.add(startBtn, BorderLayout.CENTER);
+
+        // When Start is clicked → close start screen + open player
+        startBtn.addActionListener(e -> {
+            startFrame.dispose();
+            new MoodMusicRec(); // launch main music player
+        });
+
+        startFrame.setVisible(true);
+    }
+
     private void initUI() {
-        frame = new JFrame("Spotify Mood Player");
-        frame.setSize(400, 200);
+        frame = new JFrame("Mood Music Player");
+        frame.setSize(400, 300);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        songLabel = new JLabel("No song playing", SwingConstants.CENTER);
-
-        prevBtn = new JButton("⏮");
-        playBtn = new JButton("▶");
-        nextBtn = new JButton("⏭");
-
-        prevBtn.addActionListener(e -> prevSong());
-        playBtn.addActionListener(e -> togglePlay());
-        nextBtn.addActionListener(e -> nextSong());
-
-        JPanel controls = new JPanel();
-        controls.add(prevBtn);
-        controls.add(playBtn);
-        controls.add(nextBtn);
-
         frame.setLayout(new BorderLayout());
-        frame.add(songLabel, BorderLayout.CENTER);
-        frame.add(controls, BorderLayout.SOUTH);
+        frame.getContentPane().setBackground(Color.PINK);
+
+        // add title label at the top "MOOD MUSIC"
+        JLabel title = new JLabel("🎵 Mood Music", SwingConstants.CENTER);
+        title.setFont(new Font("Arial", Font.BOLD, 26));
+        title.setForeground(Color.WHITE);
+        frame.add(title, BorderLayout.NORTH);
+
+        // button mood and button load playlist
+        JPanel topPanel = new JPanel();
+        topPanel.setBackground(Color.PINK);
+        moodInput = new JTextField("happy", 10);
+        JButton loadBtn = new JButton("Load Playlist");
+        topPanel.add(new JLabel("Mood:"));
+        topPanel.add(moodInput);
+        topPanel.add(loadBtn);
+        frame.add(topPanel, BorderLayout.SOUTH);
+
+        // list panel to show songs vertically and jscrolllpane so if there are many
+        // songs you can scroll
+        listPanel = new JPanel();
+        listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
+        listPanel.setBackground(Color.PINK);
+
+        JScrollPane scrollPane = new JScrollPane(listPanel);
+        frame.add(scrollPane, BorderLayout.CENTER);
+
+        // taken in user mood and load the song from the cvs file and passes them to
+        // showplaylist()
+        loadBtn.addActionListener(e -> {
+            String mood = moodInput.getText().trim();
+            showPlaylist(loadFromCSV("songs.csv", mood));
+        });
 
         frame.setVisible(true);
-
-        if (!playlist.isEmpty()) {
-            loadSong(0);
-        }
     }
 
-    private void loadSong(int index) {
-        stopSong();
-        currentIndex = index;
-        Track track = playlist.get(index);
-        songLabel.setText(track.title + " - " + track.artist);
-        playThread = new Thread(() -> {
-            try {
-                // Just simulate playback since we can't play audio without external libraries
-                Thread.sleep(5000); // Simulate 5 seconds of playback
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
-        playThread.start();
-    }
-
-    private void stopSong() {
-        if (playThread != null && playThread.isAlive()) {
-            playThread.interrupt();
-        }
-    }
-
-    private void nextSong() {
-        if (!playlist.isEmpty()) {
-            int nextIndex = (currentIndex + 1) % playlist.size();
-            loadSong(nextIndex);
-        }
-    }
-
-    private void prevSong() {
-        if (!playlist.isEmpty()) {
-            int prevIndex = (currentIndex - 1 + playlist.size()) % playlist.size();
-            loadSong(prevIndex);
-        }
-    }
-
-    private void togglePlay() {
-        if (playThread != null && playThread.isAlive()) {
-            stopSong();
-            playBtn.setText("▶");
-            songLabel.setText("Paused: " + playlist.get(currentIndex).title);
+    // If no songs → show "No songs found...". Otherwise: For each song (Track):
+    // Create a row with label: title – artist [mood]. Add Spotify button → opens
+    // search for that song. Refresh panel to display new rows.
+    private void showPlaylist(List<Track> playlist) {
+        listPanel.removeAll();
+        if (playlist.isEmpty()) {
+            listPanel.add(new JLabel("No songs found for this mood."));
         } else {
-            loadSong(currentIndex);
-            playBtn.setText("⏸");
+            for (Track t : playlist) {
+                JPanel songPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+                songPanel.setBackground(Color.PINK);
+
+                JLabel lbl = new JLabel(t.title + " – " + t.artist + " [" + t.mood + "]");
+                JButton spotifyBtn = new JButton("Spotify 🎧");
+
+                spotifyBtn.addActionListener(e -> openSpotify(t));
+
+                songPanel.add(lbl);
+                songPanel.add(spotifyBtn);
+                listPanel.add(songPanel);
+            }
+        }
+        listPanel.revalidate();
+        listPanel.repaint();
+    }
+
+    // open spotify search for that song
+    private void openSpotify(Track t) {
+        try {
+            String query = URLEncoder.encode(t.title + " " + t.artist, "UTF-8");
+            Desktop.getDesktop().browse(new URI("https://open.spotify.com/search/" + query));
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 
-    // --- Spotify API integration ---
-    public static List<Track> searchTracksByMood(String mood, String accessToken) {
+    // --- CSV Loader ---
+    public static List<Track> loadFromCSV(String filePath, String mood) {
         List<Track> tracks = new ArrayList<>();
-        try {
-            String query = URLEncoder.encode(mood, "UTF-8");
-            URL url = new URL("https://api.spotify.com/v1/search?q=" + query + "&type=track&limit=5");
-
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestProperty("Authorization", "Bearer " + accessToken);
-            conn.setRequestMethod("GET");
-
-            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            StringBuilder response = new StringBuilder();
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = br.readLine()) != null) {
-                response.append(line);
-            }
-            br.close();
-
-            // Simple JSON parsing using String methods (since org.json is not available)
-            String resp = response.toString();
-            if (resp.contains("\"items\":[")) {
-                String[] items = resp.split("\"items\":\\[")[1].split("]")[0].split("\\},\\{");
-                for (String item : items) {
-                    String title = extractJsonValue(item, "\"name\":\"");
-                    String previewUrl = extractJsonValue(item, "\"preview_url\":\"");
-                    String artist = extractJsonValue(item, "\"artists\":[\\{\"name\":\"");
-                    if (previewUrl != null && !previewUrl.isEmpty()) {
-                        tracks.add(new Track(title, artist, previewUrl));
+                String[] parts = line.split(",");
+                if (parts.length >= 3) {
+                    if (parts[2].equalsIgnoreCase(mood)) {
+                        tracks.add(new Track(parts[0], parts[1], parts[2]));
                     }
                 }
             }
@@ -137,41 +135,20 @@ public class MoodMusicRec {
         return tracks;
     }
 
-    private static String extractJsonValue(String json, String key) {
-        int idx = json.indexOf(key);
-        if (idx == -1)
-            return "";
-        int start = idx + key.length();
-        int end = json.indexOf("\"", start);
-        if (end == -1)
-            return "";
-        return json.substring(start, end);
-    }
-
     public static void main(String[] args) {
-        // 🔑 Replace with your actual Spotify Bearer token
-        String accessToken = "YOUR_SPOTIFY_ACCESS_TOKEN";
-
-        String mood = JOptionPane.showInputDialog("Enter a mood (happy, sad, chill...):");
-        List<Track> results = searchTracksByMood(mood, accessToken);
-
-        if (results.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "No tracks found for mood: " + mood);
-        } else {
-            new MoodMusicRec(results);
-        }
+        SwingUtilities.invokeLater(MoodMusicRec::new);
     }
 }
 
-// Track class definition
+// --- Track Class ---
 class Track {
     String title;
     String artist;
-    String previewUrl;
+    String mood;
 
-    public Track(String title, String artist, String previewUrl) {
+    public Track(String title, String artist, String mood) {
         this.title = title;
         this.artist = artist;
-        this.previewUrl = previewUrl;
+        this.mood = mood;
     }
 }

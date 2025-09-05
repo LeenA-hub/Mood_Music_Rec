@@ -3,253 +3,294 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Pixel Mood Player</title>
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+  <title>Pink Mood Player</title>
   <style>
     :root{
-      --ink:#222;
-      --paper:#f2f2f2;
-      --accent:#ffce56;
-      --accent-2:#76d6ff;
-      --accent-3:#ff8ab5;
-      --green:#8be38b;
-      --red:#ff6b6b;
-      --px:4px;
+      --bg:#ffe4ef;      /* light pink background */
+      --card:#ffffff;    /* cards */
+      --ink:#2a2a2a;     /* text */
+      --pink:#ff7fbf;    /* primary pink */
+      --pink-2:#ffb3d9;  /* softer pink */
+      --line:#ffd6ea;    /* borders */
     }
-    html,body{ height:100%; margin:0; }
+    *{ box-sizing:border-box; }
     body{
-      background:
-        linear-gradient(135deg, #a3e7ff 25%, transparent 25%) -20px 0/40px 40px,
-        linear-gradient(225deg, #ffd7e2 25%, transparent 25%) -20px 0/40px 40px,
-        linear-gradient(315deg, #a3e7ff 25%, transparent 25%) 0 0/40px 40px,
-        linear-gradient(45deg, #ffd7e2 25%, #fff5c9 25%) 0 0/40px 40px;
-      image-rendering: pixelated;
-      font-family: 'VT323', monospace;
+      margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: var(--bg);
       color: var(--ink);
-      overflow:hidden;
+      display:flex; align-items:center; justify-content:center; min-height:100vh; padding:16px;
     }
-    .window{
-      position: fixed;
-      width: 360px;
-      max-width: calc(100vw - 20px);
-      height: 520px;
-      max-height: calc(100vh - 20px);
-      left: 50%; top: 50%; transform: translate(-50%, -50%);
-      background: var(--paper);
-      border: var(--px) solid var(--ink);
-      box-shadow: calc(var(--px)*2) calc(var(--px)*2) 0 var(--ink);
-      display:flex; flex-direction:column;
+    .wrap{ width:100%; max-width:720px; display:grid; gap:12px; }
+    .card{
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius:12px;
+      padding:14px;
+      box-shadow: 0 4px 20px rgba(255,127,191,.12);
     }
-    .titlebar{
-      background: var(--accent);
-      border-bottom: var(--px) solid var(--ink);
-      padding: 8px 10px;
-      display:flex; align-items:center; gap:10px; cursor: move;
-      user-select: none;
-      font-family: 'Press Start 2P', system-ui;
-      font-size: 10px;
-      letter-spacing: 1px;
+    h1{ margin:0 0 8px 0; font-size:20px; }
+    .row{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+    input[type="text"]{
+      flex:1 1 220px; padding:10px 12px; border:1px solid var(--line); border-radius:10px; outline:none;
+      background:#fff;
     }
-    .titlebar .dot{ width: 14px; height: 14px; border: var(--px) solid var(--ink); }
-    .dot.red{ background: var(--red); }
-    .dot.green{ background: var(--green); }
-    .dot.blue{ background: var(--accent-2); }
-    .title{ flex:1; text-align:center; }
-    .content{ padding: 14px; display:flex; flex-direction:column; gap:12px; overflow:auto; }
-    .card{ background:#fff; border: var(--px) solid var(--ink); padding: 12px; }
-    label{ font-family:'Press Start 2P'; font-size:10px; }
-    input[type="text"], input[type="password"]{
-      width: 100%; font: inherit; padding: 8px;
-      border: var(--px) solid var(--ink); background:#fff; outline:none;
+    button{
+      padding:10px 14px; border:1px solid var(--pink); background:var(--pink);
+      color:#fff; border-radius:10px; cursor:pointer; font-weight:600;
     }
-    .btn{
-      font-family:'Press Start 2P'; font-size:10px; letter-spacing:1px;
-      padding: 10px 12px; border: var(--px) solid var(--ink);
-      background: var(--accent-2);
-      cursor:pointer; display:inline-block;
-      box-shadow: calc(var(--px)*1) calc(var(--px)*1) 0 var(--ink);
+    button.secondary{ background:#fff; color:var(--pink); }
+    button:disabled{ opacity:.6; cursor:not-allowed; }
+    .results{ display:grid; gap:8px; max-height:260px; overflow:auto; }
+    .item{
+      display:flex; align-items:center; gap:10px; padding:10px; border:1px solid var(--line); border-radius:10px;
     }
-    .btn:active{ transform: translate(var(--px), var(--px)); box-shadow:none; }
-    .btn.alt{ background: var(--accent-3); }
-    .row{ display:flex; gap:10px; }
-    .results{ font-size:18px; line-height:1.2; max-height:120px; overflow:auto; }
-    .results .item{ display:flex; align-items:center; gap:8px; padding:6px 0; }
-    .pill{ font-family:'Press Start 2P'; font-size:9px; padding:4px 6px; border: var(--px) solid var(--ink); background:#fff; }
+    .cover{ width:48px; height:48px; border-radius:8px; background:#f6f6f6; object-fit:cover; }
+    .meta{ display:flex; flex-direction:column; }
+    .title{ font-weight:600; }
+    .artist{ font-size:13px; opacity:.7; }
+    .pill{ margin-left:auto; font-size:12px; padding:4px 8px; border-radius:999px; background:var(--pink-2); color:#7a0043; }
     .player{
-      margin-top: 6px;
-      display:grid; grid-template-columns: 88px 1fr; gap:10px; align-items:center;
-      border: var(--px) solid var(--ink); padding:10px; background:#fff;
+      display:flex; align-items:center; gap:12px;
     }
-    .cover{ width:88px; height:88px; border: var(--px) solid var(--ink); background:#ddd; object-fit:cover; image-rendering: pixelated; }
-    .meta{ display:flex; flex-direction:column; gap:6px; }
-    .titleTxt{ font-family:'Press Start 2P'; font-size:10px; }
-    .artistTxt{ font-size:16px; opacity:.8; }
-    .controls{ display:flex; gap:8px; }
-    .px-btn{ border: var(--px) solid var(--ink); background:#fff; padding:6px 8px; font-family:'Press Start 2P'; font-size:10px; cursor:pointer; box-shadow: calc(var(--px)*1) calc(var(--px)*1) 0 var(--ink); }
-    .px-btn:active{ transform: translate(var(--px), var(--px)); box-shadow:none; }
-    .bar{ height: 10px; border: var(--px) solid var(--ink); background: repeating-linear-gradient(90deg, #fff 0 6px, #eee 6px 12px); position:relative; }
-    .bar > span{ position:absolute; top:-1px; left:0; height:100%; background: var(--accent-3); border-right: var(--px) solid var(--ink); }
-    .footer{ text-align:center; font-family:'Press Start 2P'; font-size:9px; opacity:.7; padding:6px 0; }
+    audio{ width:100%; }
+    small.muted{ color:#9a9a9a; }
   </style>
 </head>
 <body>
-  <div class="window" id="pixelWindow">
-    <div class="titlebar" id="dragBar">
-      <div class="dot red" id="closeBtn"></div>
-      <div class="dot green" id="minBtn"></div>
-      <div class="dot blue" id="maxBtn"></div>
-      <div class="title">PIXEL MOOD PLAYER</div>
+  <div class="wrap">
+    <!-- Auth -->
+    <div class="card" id="authCard">
+      <h1>Pink Mood Player</h1>
+      <div class="row">
+        <button id="loginBtn">Login with Spotify</button>
+        <button id="logoutBtn" class="secondary">Logout</button>
+        <div id="authStatus"><small class="muted">Not signed in</small></div>
+      </div>
     </div>
-    <div class="content" id="contentArea">
-      <div class="card" id="authCard">
-        <button class="btn" id="loginBtn">LOGIN WITH SPOTIFY</button>
-        <button class="btn alt" id="clearTokenBtn">LOGOUT</button>
-        <div style="font-size:14px; opacity:.75; margin-top:6px;">Authenticate with Spotify to search songs.</div>
+
+    <!-- Search -->
+    <div class="card">
+      <div class="row">
+        <input id="moodInput" type="text" placeholder="happy, sad, chill…" />
+        <button id="searchBtn">Find songs</button>
+        <button id="lastBtn" class="secondary">Last results</button>
       </div>
-      <div class="card">
-        <label for="moodInput">Your Mood</label>
-        <input id="moodInput" type="text" placeholder="happy, sad, chill..." />
-        <div class="row">
-          <button class="btn" id="searchBtn">FIND SONGS</button>
-          <button class="btn alt" id="lastBtn">LAST RESULTS</button>
+      <div id="hint"><small class="muted">Tip: you need to login to play previews.</small></div>
+    </div>
+
+    <!-- Results -->
+    <div class="card">
+      <div class="row" style="justify-content:space-between; width:100%;">
+        <strong>Results</strong>
+        <small class="muted" id="countLbl">0 items</small>
+      </div>
+      <div class="results" id="results"></div>
+    </div>
+
+    <!-- Mini Player -->
+    <div class="card" id="playerCard" style="display:none;">
+      <div class="player">
+        <img id="pCover" class="cover" alt="">
+        <div class="meta" style="min-width:160px;">
+          <div class="title" id="pTitle">—</div>
+          <div class="artist" id="pArtist">—</div>
         </div>
+        <button id="prevBtn" class="secondary">⏮</button>
+        <button id="playBtn">▶</button>
+        <button id="nextBtn" class="secondary">⏭</button>
       </div>
-      <div class="card"><div class="results" id="results"></div></div>
-      <div class="card" id="playerCard" style="display:none;">
-        <div class="player">
-          <img id="cover" class="cover" alt="cover" />
-          <div class="meta">
-            <div class="titleTxt" id="songTitle">—</div>
-            <div class="artistTxt" id="songArtist">—</div>
-            <div class="controls">
-              <button class="px-btn" id="prevBtn">⏮ PREV</button>
-              <button class="px-btn" id="playBtn">▶ PLAY</button>
-              <button class="px-btn" id="nextBtn">NEXT ⏭</button>
-            </div>
-            <div class="bar" id="progressBar"><span id="progressFill" style="width:0;"></span></div>
-          </div>
-        </div>
-        <audio id="player" preload="auto"></audio>
+      <div style="margin-top:8px;">
+        <audio id="player" controls preload="auto"></audio>
       </div>
-      <div class="footer">© pixel vibes</div>
     </div>
   </div>
 
   <script>
-    // ---- Spotify Auth ----
+    // ====== Spotify OAuth (Implicit Grant) ======
     const clientId = "ae1da331b294421e9edb2d3e45bd1353";
-    const redirectUri = "http://localhost:8888/callback";
-    const scopes = "user-read-private user-read-email";
-    let accessToken = localStorage.getItem('sp_token') || '';
+    const redirectUri = "http://localhost:8888/callback"; // must match Spotify app settings
+    const scopes = "user-read-email";
 
-    function getAuthUrl(){
+    let accessToken = localStorage.getItem("sp_token") || "";
+
+    function authUrl(){
       return `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scopes)}`;
     }
 
-    // check hash in callback
-    if(window.location.hash.includes("access_token")){
-      const params = new URLSearchParams(window.location.hash.substring(1));
-      accessToken = params.get("access_token");
-      if(accessToken){
-        localStorage.setItem("sp_token", accessToken);
-        window.location.hash = ""; // clean up URL
+    // handle callback hash
+    if (location.hash.includes("access_token")) {
+      const params = new URLSearchParams(location.hash.slice(1));
+      const t = params.get("access_token");
+      if (t) {
+        accessToken = t;
+        localStorage.setItem("sp_token", t);
       }
+      // optional: clean URL
+      history.replaceState(null, "", location.pathname);
     }
 
-    document.getElementById("loginBtn").onclick = ()=>{ window.location.href = getAuthUrl(); };
-    document.getElementById("clearTokenBtn").onclick = ()=>{
+    const loginBtn = document.getElementById("loginBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const authStatus = document.getElementById("authStatus");
+
+    function updateAuthUI(){
+      if (accessToken) {
+        authStatus.innerHTML = `<small class="muted">Signed in ✔</small>`;
+        loginBtn.disabled = true;
+      } else {
+        authStatus.innerHTML = `<small class="muted">Not signed in</small>`;
+        loginBtn.disabled = false;
+      }
+    }
+    loginBtn.onclick = () => { location.href = authUrl(); };
+    logoutBtn.onclick = () => {
       localStorage.removeItem("sp_token");
-      accessToken = '';
-      alert("Logged out!");
+      accessToken = "";
+      updateAuthUI();
     };
+    updateAuthUI();
 
-    // ---- draggable window ----
-    (function(){
-      const win = document.getElementById('pixelWindow');
-      const bar = document.getElementById('dragBar');
-      let offX=0, offY=0, dragging=false;
-      bar.addEventListener('mousedown', (e)=>{ dragging=true; offX=e.clientX - win.offsetLeft; offY=e.clientY - win.offsetTop; });
-      window.addEventListener('mousemove', (e)=>{ if(!dragging) return; win.style.left=e.clientX - offX + 'px'; win.style.top=e.clientY - offY + 'px'; win.style.transform='translate(0,0)'; });
-      window.addEventListener('mouseup', ()=> dragging=false);
-      document.getElementById('closeBtn').onclick=()=> win.style.display='none';
-      document.getElementById('minBtn').onclick=()=> document.getElementById('contentArea').style.display = (document.getElementById('contentArea').style.display==='none'?'block':'none');
-      document.getElementById('maxBtn').onclick=()=> { win.style.left='50%'; win.style.top='50%'; win.style.transform='translate(-50%,-50%)'; };
-    })();
+    // ====== App State ======
+    const moodInput = document.getElementById("moodInput");
+    const searchBtn = document.getElementById("searchBtn");
+    const lastBtn = document.getElementById("lastBtn");
+    const resultsDiv = document.getElementById("results");
+    const countLbl = document.getElementById("countLbl");
 
-    // ---- App State ----
+    const playerCard = document.getElementById("playerCard");
+    const pCover = document.getElementById("pCover");
+    const pTitle = document.getElementById("pTitle");
+    const pArtist = document.getElementById("pArtist");
+    const prevBtn = document.getElementById("prevBtn");
+    const playBtn = document.getElementById("playBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const audio = document.getElementById("player");
+
     let currentPlaylist = [];
     let currentIndex = 0;
-    const resultsDiv = document.getElementById('results');
-    const player = document.getElementById('player');
-    const playBtn = document.getElementById('playBtn');
-    const cover = document.getElementById('cover');
-    const songTitle = document.getElementById('songTitle');
-    const songArtist = document.getElementById('songArtist');
-    const playerCard = document.getElementById('playerCard');
-    const progressFill = document.getElementById('progressFill');
 
-    // search
-    document.getElementById('searchBtn').onclick = async ()=>{
-      const mood = document.getElementById('moodInput').value.trim();
-      if(!mood){ resultsDiv.textContent = 'Enter a mood first!'; return; }
-      if(!accessToken){ resultsDiv.textContent = 'Login with Spotify first!'; return; }
-      resultsDiv.textContent = 'Loading…';
-      try{
-        const res = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(mood)}&type=track&limit=10`, {
-          headers: { Authorization: 'Bearer ' + accessToken }
+    function renderResults(list){
+      countLbl.textContent = `${list.length} item${list.length!==1?'s':''}`;
+      resultsDiv.innerHTML = list.map((t, i) => `
+        <div class="item" data-idx="${i}">
+          <img src="${t.albumArt || ''}" class="cover" alt="">
+          <div class="meta">
+            <div class="title">${t.title}</div>
+            <div class="artist">${t.artist}</div>
+          </div>
+          <span class="pill">${String(i+1).padStart(2,'0')}</span>
+        </div>
+      `).join("");
+
+      // click to play (if preview available)
+      [...resultsDiv.querySelectorAll(".item")].forEach(el=>{
+        el.addEventListener("click", ()=>{
+          const idx = Number(el.dataset.idx);
+          if (!currentPlaylist[idx].previewUrl) {
+            alert("No preview for this track.");
+            return;
+          }
+          currentIndex = idx;
+          loadTrack(currentPlaylist[currentIndex]);
         });
-        const data = await res.json();
-        if(!data.tracks){ throw new Error(data.error?.message || 'No tracks'); }
-        const tracks = data.tracks.items.filter(t=> t.preview_url);
-        if(tracks.length===0){ resultsDiv.textContent = 'No songs with preview found.'; return; }
-        currentPlaylist = tracks.map(t=>({ title:t.name, artist:t.artists[0].name, previewUrl:t.preview_url, albumArt:(t.album.images[0]?.url)||'' }));
-        currentIndex = 0;
-        resultsDiv.innerHTML = currentPlaylist.map((s,i)=>`<div class="item"><span class="pill">${String(i+1).padStart(2,'0')}</span> 🎵 <b>${s.title}</b> – ${s.artist}</div>`).join('');
-        localStorage.setItem('lastMood', mood);
-        localStorage.setItem('lastPlaylist', JSON.stringify(currentPlaylist));
-        showPlayer();
-        loadSong(currentPlaylist[currentIndex]);
-      }catch(err){
-        console.error(err);
-        resultsDiv.textContent = 'Error fetching songs (token expired?)';
-      }
-    };
-
-    document.getElementById('lastBtn').onclick = ()=>{
-      const last = JSON.parse(localStorage.getItem('lastPlaylist')||'[]');
-      if(last.length===0){ resultsDiv.textContent = 'No previous results.'; return; }
-      currentPlaylist = last; currentIndex = 0;
-      resultsDiv.innerHTML = currentPlaylist.map((s,i)=>`<div class="item"><span class="pill">${String(i+1).padStart(2,'0')}</span> 🎵 <b>${s.title}</b> – ${s.artist}</div>`).join('');
-      showPlayer();
-      loadSong(currentPlaylist[currentIndex]);
-    };
-
-    function showPlayer(){ playerCard.style.display='block'; }
-
-    function loadSong(song){
-      cover.src = song.albumArt || '';
-      songTitle.textContent = song.title;
-      songArtist.textContent = song.artist;
-      player.src = song.previewUrl;
-      player.play().catch(()=>{});
-      playBtn.textContent = '⏸ PAUSE';
+      });
     }
 
-    document.getElementById('nextBtn').onclick = ()=>{ if(currentPlaylist.length){ currentIndex = (currentIndex+1)%currentPlaylist.length; loadSong(currentPlaylist[currentIndex]); } };
-    document.getElementById('prevBtn').onclick = ()=>{ if(currentPlaylist.length){ currentIndex = (currentIndex-1+currentPlaylist.length)%currentPlaylist.length; loadSong(currentPlaylist[currentIndex]); } };
-    playBtn.onclick = ()=>{ if(player.paused){ player.play(); playBtn.textContent='⏸ PAUSE'; } else { player.pause(); playBtn.textContent='▶ PLAY'; } };
+    function showPlayer(){ playerCard.style.display = "block"; }
+    function hidePlayer(){ playerCard.style.display = "none"; }
 
-    player.addEventListener('timeupdate', ()=>{
-      const p = player.duration ? (player.currentTime / player.duration) : 0;
-      progressFill.style.width = Math.round(p*100) + '%';
-    });
-    player.addEventListener('ended', ()=>{ if(currentPlaylist.length){ currentIndex = (currentIndex+1)%currentPlaylist.length; loadSong(currentPlaylist[currentIndex]); } });
+    function loadTrack(track){
+      showPlayer();
+      pCover.src = track.albumArt || "";
+      pTitle.textContent = track.title || "—";
+      pArtist.textContent = track.artist || "—";
+      audio.src = track.previewUrl || "";
+      playBtn.textContent = "⏸";
+      audio.play().catch(()=>{});
+    }
 
-    (function(){
-      const lastMood = localStorage.getItem('lastMood');
-      if(lastMood){ document.getElementById('moodInput').value = lastMood; }
-      const last = JSON.parse(localStorage.getItem('lastPlaylist')||'[]');
-      if(last.length){ currentPlaylist = last; currentIndex = 0; resultsDiv.innerHTML = currentPlaylist.map((s,i)=>`<div class="item"><span class="pill">${String(i+1).padStart(2,'0')}</span> 🎵 <b>${s.title}</b> – ${s.artist}</div>`).join(''); showPlayer(); loadSong(currentPlaylist[currentIndex]); }
+    prevBtn.onclick = ()=>{
+      if (!currentPlaylist.length) return;
+      currentIndex = (currentIndex - 1 + currentPlaylist.length) % currentPlaylist.length;
+      loadTrack(currentPlaylist[currentIndex]);
+    };
+    nextBtn.onclick = ()=>{
+      if (!currentPlaylist.length) return;
+      currentIndex = (currentIndex + 1) % currentPlaylist.length;
+      loadTrack(currentPlaylist[currentIndex]);
+    };
+    playBtn.onclick = ()=>{
+      if (audio.paused){ audio.play(); playBtn.textContent="⏸"; }
+      else { audio.pause(); playBtn.textContent="▶"; }
+    };
+
+    audio.addEventListener("ended", ()=> nextBtn.click());
+
+    // ====== Search by Mood (Spotify) ======
+    async function searchSpotify(mood){
+      if (!accessToken) {
+        alert("Please login with Spotify first.");
+        return;
+      }
+      resultsDiv.innerHTML = `<small class="muted">Loading…</small>`;
+      try{
+        const res = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(mood)}&type=track&limit=12`,{
+          headers:{ Authorization:`Bearer ${accessToken}` }
+        });
+        const data = await res.json();
+        const items = data?.tracks?.items || [];
+        currentPlaylist = items
+          .filter(t=>t.preview_url)
+          .map(t=>({
+            title: t.name,
+            artist: (t.artists?.[0]?.name)||"Unknown",
+            previewUrl: t.preview_url,
+            albumArt: (t.album?.images?.[1]?.url) || (t.album?.images?.[0]?.url) || ""
+          }));
+        localStorage.setItem("lastMood", mood);
+        localStorage.setItem("lastPlaylist", JSON.stringify(currentPlaylist));
+        renderResults(currentPlaylist);
+        if (currentPlaylist.length){
+          currentIndex = 0;
+          loadTrack(currentPlaylist[0]);
+        } else {
+          hidePlayer();
+        }
+      }catch(e){
+        console.error(e);
+        resultsDiv.innerHTML = `<small class="muted">Error. Token may be expired.</small>`;
+      }
+    }
+
+    // UI handlers
+    searchBtn.onclick = ()=>{
+      const mood = moodInput.value.trim();
+      if (!mood) return;
+      searchSpotify(mood);
+    };
+
+    lastBtn.onclick = ()=>{
+      const last = JSON.parse(localStorage.getItem("lastPlaylist")||"[]");
+      if (!last.length){
+        resultsDiv.innerHTML = `<small class="muted">No previous results.</small>`;
+        hidePlayer();
+        return;
+      }
+      currentPlaylist = last;
+      renderResults(currentPlaylist);
+      currentIndex = 0;
+      loadTrack(currentPlaylist[0]);
+    };
+
+    // restore last mood
+    (function init(){
+      const lastMood = localStorage.getItem("lastMood");
+      if (lastMood) moodInput.value = lastMood;
+      const last = JSON.parse(localStorage.getItem("lastPlaylist")||"[]");
+      if (last.length){
+        currentPlaylist = last;
+        renderResults(currentPlaylist);
+      }
     })();
   </script>
 </body>
