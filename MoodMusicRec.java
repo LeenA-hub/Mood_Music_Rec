@@ -1,6 +1,5 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -28,18 +27,25 @@ public class MoodMusicRec {
     }
 
     private void createUI() {
-        JFrame frame = new JFrame("Mood Music Recommender");
+        JFrame frame = new JFrame("🎵 Mood Music Recommender");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(300, 200);
-        frame.setLayout(new BorderLayout());
+        frame.setSize(350, 250);
+        frame.setLayout(new BorderLayout(10, 10));
 
         // Top panel: label + text field + button
         JPanel inputPanel = new JPanel();
-        inputPanel.setLayout(new FlowLayout());
+        inputPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
 
         JLabel moodLabel = new JLabel("Enter your mood:");
-        JTextField moodField = new JTextField(10);
-        JButton generateButton = new JButton("Generate");
+        moodLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+
+        JTextField moodField = new JTextField(12);
+        JButton generateButton = new JButton("Generate 🎶");
+
+        generateButton.setFocusPainted(false);
+        generateButton.setBackground(new Color(100, 180, 255));
+        generateButton.setForeground(Color.WHITE);
+        generateButton.setFont(new Font("SansSerif", Font.BOLD, 13));
 
         inputPanel.add(moodLabel);
         inputPanel.add(moodField);
@@ -48,6 +54,8 @@ public class MoodMusicRec {
         // Results area
         resultArea.setEditable(false);
         resultArea.setLineWrap(true);
+        resultArea.setWrapStyleWord(true);
+        resultArea.setFont(new Font("Monospaced", Font.PLAIN, 13));
 
         generateButton.addActionListener(event -> {
             String mood = moodField.getText();
@@ -57,6 +65,7 @@ public class MoodMusicRec {
         frame.add(inputPanel, BorderLayout.NORTH);
         frame.add(new JScrollPane(resultArea), BorderLayout.CENTER);
 
+        frame.setLocationRelativeTo(null); // center on screen
         frame.setVisible(true);
     }
 
@@ -81,14 +90,14 @@ public class MoodMusicRec {
             return;
         }
 
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder("Results for: " + mood + "\n\n");
         for (Song s : songs) {
             if (s.mood.equalsIgnoreCase(mood.trim())) {
-                sb.append(s.title).append(" - ").append(s.artist).append("\n");
+                sb.append("• ").append(s.title).append(" - ").append(s.artist).append("\n");
             }
         }
 
-        if (sb.length() == 0) {
+        if (sb.toString().equals("Results for: " + mood + "\n\n")) {
             resultArea.setText("No songs found for mood: " + mood);
         } else {
             resultArea.setText(sb.toString());
