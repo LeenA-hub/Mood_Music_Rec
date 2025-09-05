@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mood Music Recommender</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background: #f4f4f4;
+    }
+    .player {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      width: 300px;
+      text-align: center;
+    }
+    h1 {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    input {
+      width: 80%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+    button {
+      background: #6c63ff;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #5750e6;
+    }
+    .results {
+      margin-top: 15px;
+      text-align: left;
+      font-size: 14px;
+      max-height: 120px;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="player">
+    <h1>Mood Music 🎵</h1>
+    <input type="text" id="moodInput" placeholder="Enter your mood">
+    <button onclick="showRecommendations()">Generate</button>
+    <div class="results" id="results"></div>
+  </div>
+
+  <script>
+    // Hardcoded example songs
+    const songs = [
+      { title: "Year 3000", artist: "Jonas Brothers", mood: "energetic" },
+      { title: "The Climb", artist: "Miley Cyrus", mood: "happy" },
+      { title: "Potential Breakup Song", artist: "Aly & AJ", mood: "energetic" },
+      { title: "Gotta Go My Own Way", artist: "Zac & Vanessa", mood: "sad" },
+    ];
+
+    function showRecommendations() {
+      const mood = document.getElementById("moodInput").value.trim().toLowerCase();
+      const resultsDiv = document.getElementById("results");
+
+      if (!mood) {
+        resultsDiv.innerHTML = "Please enter a mood.";
+        return;
+      }
+
+      const matches = songs.filter(song => song.mood === mood);
+      if (matches.length === 0) {
+        resultsDiv.innerHTML = "No songs found for mood: " + mood;
+      } else {
+        resultsDiv.innerHTML = matches.map(s => `🎵 ${s.title} - ${s.artist}`).join("<br>");
+      }
+    }
+  </script>
+</body>
+</html>
