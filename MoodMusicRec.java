@@ -1,165 +1,177 @@
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.CardLayout;
-import java.io.*;
-import java.util.prefs.Preferences;
-import javax.sound.sampled.*;
-import java.util.List;
+import java.awt.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.List;
 
 public class MoodMusicRec {
-    static class Song {
-        String title, artist, mood, file;
+    private JFrame frame;
+    private JButton playBtn, nextBtn, prevBtn;
+    private JLabel songLabel;
+    private List<Track> playlist;
+    private int currentIndex = 0;
+    private Thread playThread;
 
-        Song(String title, String artist, String mood, String file) {
-            this.title = title;
-            this.artist = artist;
-            this.mood = mood.trim().toLowerCase();
-            this.file = file;
-        }
+    public MoodMusicRec(List<Track> playlist) {
+        this.playlist = playlist;
+        initUI();
     }
 
-    private final List<Song> songs = new ArrayList<>();
-    private final JTextArea resultArea = new JTextArea();
-    private final Preferences prefs = Preferences.userNodeForPackage(MoodMusicRec.class);
-    private final CardLayout cardLayout = new CardLayout();
-    private final JPanel mainPanel = new JPanel(cardLayout);
-
-    public MoodMusicRec() {
-        loadSongs("songs.csv"); // CSV format: title,artist,mood,filePath
-        createUI();
-    }
-
-    private void createUI() {
-        JFrame frame = new JFrame("🎵 Mood Music Recommender");
+    private void initUI() {
+        frame = new JFrame("Spotify Mood Player");
+        frame.setSize(400, 200);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 300);
 
-        // --- Home Page ---
-        JPanel homePanel = new JPanel(new BorderLayout(10, 10));
-        JLabel titleLabel = new JLabel("🎵 Mood Music", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
-        JButton startButton = new JButton("Start");
-        JButton lastButton = new JButton("Last Mood Results");
+        songLabel = new JLabel("No song playing", SwingConstants.CENTER);
 
-        JPanel homeButtons = new JPanel();
-        homeButtons.add(startButton);
-        homeButtons.add(lastButton);
+        prevBtn = new JButton("⏮");
+        playBtn = new JButton("▶");
+        nextBtn = new JButton("⏭");
 
-        homePanel.add(titleLabel, BorderLayout.CENTER);
-        homePanel.add(homeButtons, BorderLayout.SOUTH);
+        prevBtn.addActionListener(e -> prevSong());
+        playBtn.addActionListener(e -> togglePlay());
+        nextBtn.addActionListener(e -> nextSong());
 
-        // --- Recommendation Page ---
-        JPanel recPanel = new JPanel(new BorderLayout(10, 10));
-        JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        JLabel moodLabel = new JLabel("Enter your mood:");
-        JTextField moodField = new JTextField(12);
-        JButton generateButton = new JButton("Generate 🎶");
-        JButton backButton = new JButton("⬅ Back");
+        JPanel controls = new JPanel();
+        controls.add(prevBtn);
+        controls.add(playBtn);
+        controls.add(nextBtn);
 
-        inputPanel.add(moodLabel);
-        inputPanel.add(moodField);
-        inputPanel.add(generateButton);
+        frame.setLayout(new BorderLayout());
+        frame.add(songLabel, BorderLayout.CENTER);
+        frame.add(controls, BorderLayout.SOUTH);
 
-        resultArea.setEditable(false);
-        resultArea.setLineWrap(true);
-        resultArea.setWrapStyleWord(true);
-
-        JPanel bottomPanel = new JPanel(new BorderLayout());
-        bottomPanel.add(backButton, BorderLayout.WEST);
-
-        recPanel.add(inputPanel, BorderLayout.NORTH);
-        recPanel.add(new JScrollPane(resultArea), BorderLayout.CENTER);
-        recPanel.add(bottomPanel, BorderLayout.SOUTH);
-
-        // --- Main Panel with CardLayout ---
-        mainPanel.add(homePanel, "home");
-        mainPanel.add(recPanel, "rec");
-
-        frame.add(mainPanel);
-        frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 
-        // --- Actions ---
-        startButton.addActionListener(_ -> cardLayout.show(mainPanel, "rec"));
-        backButton.addActionListener(_ -> cardLayout.show(mainPanel, "home"));
-        lastButton.addActionListener(_ -> showLastMood());
+        if (!playlist.isEmpty()) {
+            loadSong(0);
+        }
+    }
 
-        generateButton.addActionListener(_ -> {
-            String mood = moodField.getText().trim();
-            if (!mood.isEmpty()) {
-                showRecommendations(mood);
+    private void loadSong(int index) {
+        stopSong();
+        currentIndex = index;
+        Track track = playlist.get(index);
+        songLabel.setText(track.title + " - " + track.artist);
+        playThread = new Thread(() -> {
+            try {
+                // Just simulate playback since we can't play audio without external libraries
+                Thread.sleep(5000); // Simulate 5 seconds of playback
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
+        playThread.start();
     }
 
-    private void loadSongs(String fileName) {
-        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
-            br.readLine(); // skip header
+    private void stopSong() {
+        if (playThread != null && playThread.isAlive()) {
+            playThread.interrupt();
+        }
+    }
+
+    private void nextSong() {
+        if (!playlist.isEmpty()) {
+            int nextIndex = (currentIndex + 1) % playlist.size();
+            loadSong(nextIndex);
+        }
+    }
+
+    private void prevSong() {
+        if (!playlist.isEmpty()) {
+            int prevIndex = (currentIndex - 1 + playlist.size()) % playlist.size();
+            loadSong(prevIndex);
+        }
+    }
+
+    private void togglePlay() {
+        if (playThread != null && playThread.isAlive()) {
+            stopSong();
+            playBtn.setText("▶");
+            songLabel.setText("Paused: " + playlist.get(currentIndex).title);
+        } else {
+            loadSong(currentIndex);
+            playBtn.setText("⏸");
+        }
+    }
+
+    // --- Spotify API integration ---
+    public static List<Track> searchTracksByMood(String mood, String accessToken) {
+        List<Track> tracks = new ArrayList<>();
+        try {
+            String query = URLEncoder.encode(mood, "UTF-8");
+            URL url = new URL("https://api.spotify.com/v1/search?q=" + query + "&type=track&limit=5");
+
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestProperty("Authorization", "Bearer " + accessToken);
+            conn.setRequestMethod("GET");
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            StringBuilder response = new StringBuilder();
             String line;
             while ((line = br.readLine()) != null) {
-                String[] parts = line.split(",");
-                if (parts.length == 4) {
-                    songs.add(new Song(parts[0], parts[1], parts[2], parts[3]));
+                response.append(line);
+            }
+            br.close();
+
+            // Simple JSON parsing using String methods (since org.json is not available)
+            String resp = response.toString();
+            if (resp.contains("\"items\":[")) {
+                String[] items = resp.split("\"items\":\\[")[1].split("]")[0].split("\\},\\{");
+                for (String item : items) {
+                    String title = extractJsonValue(item, "\"name\":\"");
+                    String previewUrl = extractJsonValue(item, "\"preview_url\":\"");
+                    String artist = extractJsonValue(item, "\"artists\":[\\{\"name\":\"");
+                    if (previewUrl != null && !previewUrl.isEmpty()) {
+                        tracks.add(new Track(title, artist, previewUrl));
+                    }
                 }
             }
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Error loading songs file.");
-        }
-    }
-
-    private void showRecommendations(String mood) {
-        StringBuilder sb = new StringBuilder("Results for: " + mood + "\n\n");
-        List<Song> matches = new ArrayList<>();
-        for (Song s : songs) {
-            if (s.mood.equalsIgnoreCase(mood)) {
-                sb.append("• ").append(s.title).append(" - ").append(s.artist).append("\n");
-                matches.add(s);
-            }
-        }
-
-        if (matches.isEmpty()) {
-            resultArea.setText("No songs found for mood: " + mood);
-        } else {
-            resultArea.setText(sb.toString());
-            prefs.put("lastMood", mood);
-            prefs.put("lastResults", sb.toString());
-
-            // play first match as demo
-            playSong(matches.get(0).file);
-        }
-    }
-
-    private void showLastMood() {
-        String lastMood = prefs.get("lastMood", null);
-        String lastResults = prefs.get("lastResults", null);
-
-        if (lastMood != null && lastResults != null) {
-            cardLayout.show(mainPanel, "rec");
-            resultArea.setText(lastResults);
-        } else {
-            JOptionPane.showMessageDialog(null, "No previous results found.");
-        }
-    }
-
-    private void playSong(String filePath) {
-        try {
-            File file = new File(filePath);
-            if (!file.exists())
-                return;
-
-            AudioInputStream audioStream = AudioSystem.getAudioInputStream(file);
-            Clip clip = AudioSystem.getClip();
-            clip.open(audioStream);
-            clip.start();
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Error playing song: " + e.getMessage());
+            e.printStackTrace();
         }
+        return tracks;
+    }
+
+    private static String extractJsonValue(String json, String key) {
+        int idx = json.indexOf(key);
+        if (idx == -1)
+            return "";
+        int start = idx + key.length();
+        int end = json.indexOf("\"", start);
+        if (end == -1)
+            return "";
+        return json.substring(start, end);
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(MoodMusicRec::new);
+        // 🔑 Replace with your actual Spotify Bearer token
+        String accessToken = "YOUR_SPOTIFY_ACCESS_TOKEN";
+
+        String mood = JOptionPane.showInputDialog("Enter a mood (happy, sad, chill...):");
+        List<Track> results = searchTracksByMood(mood, accessToken);
+
+        if (results.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "No tracks found for mood: " + mood);
+        } else {
+            new MoodMusicRec(results);
+        }
+    }
+}
+
+// Track class definition
+class Track {
+    String title;
+    String artist;
+    String previewUrl;
+
+    public Track(String title, String artist, String previewUrl) {
+        this.title = title;
+        this.artist = artist;
+        this.previewUrl = previewUrl;
     }
 }
