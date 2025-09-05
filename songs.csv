@@ -1,114 +1,114 @@
-title,artist,mood
-Yana Ya Mafish,Tamer Hosny,Happy
-El Hob El Kebir,Ragheb Alama,Happy
-Nasini El Donya,Ragheb Alama,Sad
-Ana W Bass,Elissa,Other
-Min Awel Dekika,Elissa;Saad Lamjarred,Sad
-august,Taylor Swift,Sad
-Blank Space,Taylor Swift,Energetic
-Delicate,Taylor Swift,Chill
-So High School,Taylor Swift,Happy
-I Knew You Were Trouble.,Taylor Swift,Energetic
-Style,Taylor Swift,Energetic
-Don’t Blame Me,Taylor Swift,Other
-Cruel Summer,Taylor Swift,Energetic
-Love Story (Taylor’s Version),Taylor Swift,Happy
-Fortnight (feat. Post Malone),Taylor Swift;Post Malone,Sad
-You Belong With Me (Taylor’s Version),Taylor Swift,Happy
-Lover,Taylor Swift,Chill
-Shake It Off,Taylor Swift,Happy
-Enchanted (Taylor's Version),Taylor Swift,Other
-I Don’t Wanna Live Forever (Fifty Shades Darker),ZAYN;Taylor Swift,Sad
-I Can Do It With a Broken Heart,Taylor Swift,Sad
-All Too Well (10 Minute Version) (Taylor's Version) (From The Vault),Taylor Swift,Sad
-Anti-Hero,Taylor Swift,Sad
-Look What You Made Me Do,Taylor Swift,Energetic
-We Are Never Ever Getting Back Together,Taylor Swift,Energetic
-Wildest Dreams (Taylor's Version),Taylor Swift,Sad
-Karma,Taylor Swift,Energetic
-willow,Taylor Swift,Chill
-Bad Blood,Taylor Swift,Energetic
-This Love (Taylor’s Version),Taylor Swift,Sad
-cardigan,Taylor Swift,Sad
-...Ready For It?,Taylor Swift,Energetic
-Better Than Revenge,Taylor Swift,Energetic
-You Need To Calm Down,Taylor Swift,Happy
-Getaway Car,Taylor Swift,Other
-"You're On Your Own, Kid",Taylor Swift,Sad
-Who’s Afraid of Little Old Me?,Taylor Swift,Other
-my tears ricochet,Taylor Swift,Sad
-Down Bad,Taylor Swift,Sad
-Call It What You Want,Taylor Swift,Chill
-Guilty as Sin?,Taylor Swift,Other
-You’re Losing Me (From The Vault),Taylor Swift,Sad
-But Daddy I Love Him,Taylor Swift,Other
-Lavender Haze,Taylor Swift,Energetic
-Mine (Taylor's Version),Taylor Swift,Happy
-All Of The Girls You Loved Before,Taylor Swift,Happy
-The Tortured Poets Department,Taylor Swift,Other
-I Can See You (Taylor’s Version) (From The Vault),Taylor Swift,Energetic
-Midnight Rain,Taylor Swift,Sad
-22 (Taylor's Version),Taylor Swift,Happy
-Back To December,Taylor Swift,Sad
-Welcome To New York,Taylor Swift,Happy
-Snow On The Beach (feat. More Lana Del Rey),Taylor Swift;Lana Del Rey,Chill
-Mean,Taylor Swift,Energetic
-Clean (Taylor's Version),Taylor Swift,Sad
-All You Had To Do Was Stay,Taylor Swift,Sad
-Bejeweled,Taylor Swift,Happy
-Paper Rings,Taylor Swift,Happy
-The Man,Taylor Swift,Energetic
-If This Was A Movie (Taylor’s Version),Taylor Swift,Sad
-Suburban Legends (Taylor's Version) (From The Vault),Taylor Swift,Chill
-Mr. Perfectly Fine (Taylor’s Version) (From The Vault),Taylor Swift,Sad
-Mastermind,Taylor Swift,Chill
-Long Live (Taylor's Version),Taylor Swift,Happy
-champagne problems,Taylor Swift,Sad
-exile (feat. Bon Iver),Taylor Swift;Bon Iver,Sad
-Red,Taylor Swift,Energetic
-Delicate - Recorded at The Tracking Room Nashville,Taylor Swift,Chill
-the 1,Taylor Swift,Sad
-End Game,Taylor Swift;Ed Sheeran;Future,Energetic
-Nothing New (feat. Phoebe Bridgers) (Taylor’s Version) (From The Vault),Taylor Swift;Phoebe Bridgers,Sad
-September - Recorded at The Tracking Room Nashville,Taylor Swift,Happy
-I Bet You Think About Me (feat. Chris Stapleton) (Taylor’s Version) (From The Vault),Taylor Swift;Chris Stapleton,Energetic
-Fearless,Taylor Swift,Happy
-Miss Americana & The Heartbreak Prince,Taylor Swift,Other
-the last great american dynasty,Taylor Swift,Other
-The Archer,Taylor Swift,Sad
-illicit affairs,Taylor Swift,Sad
-Our Song,Taylor Swift,Happy
-Death By A Thousand Cuts,Taylor Swift,Sad
-Crazier,Taylor Swift,Happy
-Year 3000,Jonas Brothers,Happy
-What Dreams Are Made Of,Hilary Duff,Happy
-The Climb,Miley Cyrus,Sad
-Potential Breakup Song,Aly & AJ,Energetic
-Introducing Me,Nick Jonas,Happy
-Ordinary Girl,Hannah Montana,Chill
-Gotta Go My Own Way,Zac Efron;Vanessa Hudgens;Disney,Sad
-Determinate - From 'Lemonade Mouth',Adam Hicks;Bridgit Mendler;Naomi Scott;Hayley Kiyoko,Energetic
-You Are the Music in Me,Troy;Gabriella,Happy
-S.O.S.,Jonas Brothers,Energetic
-Lovebug,Jonas Brothers,Chill
-He Could Be the One,Hannah Montana,Energetic
-Beautiful Soul,Jesse McCartney,Chill
-Wake Up,Hilary Duff,Energetic
-The Tide Is High - Radio Mix,Atomic Kitten,Happy
-This Is Me,Demi Lovato;Joe Jonas,Energetic
-The Best of Both Worlds - From 'Hannah Montana'/Soundtrack Version,Hannah Montana,Happy
-Amigas Cheetahs,The Cheetah Girls;Belinda,Energetic
-Nobody's Perfect,Hannah Montana,Energetic
-Here We Go Again,Demi Lovato,Energetic
-Paranoid,Jonas Brothers,Sad
-I'll Always Remember You,Hannah Montana,Sad
-If We Were A Movie - From 'Hannah Montana'/Soundtrack Version,Hannah Montana,Chill
-One In a Million - From 'Hannah Montana 2',Hannah Montana,Chill
-7 Things - Single Version,Miley Cyrus,Energetic
-La La Land,Demi Lovato,Energetic
-You'll Always Find Your Way Back Home,Hannah Montana,Happy
-We Rock,Cast Of Camp Rock,Energetic
-The In Crowd,Mitchel Musso,Other
-She's So Gone,Naomi Scott,Energetic
-Heard It On The Radio,Austin Moon,Chill
-The Subway,Chappell Roan,Other
+title,artist,mood,file
+Yana Ya Mafish,Tamer Hosny,Happy,Yana_Ya_Mafish.wav
+El Hob El Kebir,Ragheb Alama,Happy,El_Hob_El_Kebir.wav
+Nasini El Donya,Ragheb Alama,Sad,Nasini_El_Donya.wav
+Ana W Bass,Elissa,Other,Ana_W_Bass.wav
+Min Awel Dekika,Elissa;Saad Lamjarred,Sad,Min_Awel_Dekika.wav
+august,Taylor Swift,Sad,august.wav
+Blank Space,Taylor Swift,Energetic,Blank_Space.wav
+Delicate,Taylor Swift,Chill,Delicate.wav
+So High School,Taylor Swift,Happy,So_High_School.wav
+I Knew You Were Trouble.,Taylor Swift,Energetic,I_Knew_You_Were_Trouble..wav
+Style,Taylor Swift,Energetic,Style.wav
+Don’t Blame Me,Taylor Swift,Other,Don’t_Blame_Me.wav
+Cruel Summer,Taylor Swift,Energetic,Cruel_Summer.wav
+Love Story (Taylor’s Version),Taylor Swift,Happy,Love_Story_(Taylor’s_Version).wav
+Fortnight (feat. Post Malone),Taylor Swift;Post Malone,Sad,Fortnight_(feat._Post_Malone).wav
+You Belong With Me (Taylor’s Version),Taylor Swift,Happy,You_Belong_With_Me_(Taylor’s_Version).wav
+Lover,Taylor Swift,Chill,Lover.wav
+Shake It Off,Taylor Swift,Happy,Shake_It_Off.wav
+Enchanted (Taylor's Version),Taylor Swift,Other,Enchanted_(Taylor's_Version).wav
+I Don’t Wanna Live Forever (Fifty Shades Darker),ZAYN;Taylor Swift,Sad,I_Don’t_Wanna_Live_Forever_(Fifty_Shades_Darker).wav
+I Can Do It With a Broken Heart,Taylor Swift,Sad,I_Can_Do_It_With_a_Broken_Heart.wav
+All Too Well (10 Minute Version) (Taylor's Version) (From The Vault),Taylor Swift,Sad,All_Too_Well_(10_Minute_Version)_(Taylor's_Version)_(From_The_Vault).wav
+Anti-Hero,Taylor Swift,Sad,Anti-Hero.wav
+Look What You Made Me Do,Taylor Swift,Energetic,Look_What_You_Made_Me_Do.wav
+We Are Never Ever Getting Back Together,Taylor Swift,Energetic,We_Are_Never_Ever_Getting_Back_Together.wav
+Wildest Dreams (Taylor's Version),Taylor Swift,Sad,Wildest_Dreams_(Taylor's_Version).wav
+Karma,Taylor Swift,Energetic,Karma.wav
+willow,Taylor Swift,Chill,willow.wav
+Bad Blood,Taylor Swift,Energetic,Bad_Blood.wav
+This Love (Taylor’s Version),Taylor Swift,Sad,This_Love_(Taylor’s_Version).wav
+cardigan,Taylor Swift,Sad,cardigan.wav
+...Ready For It?,Taylor Swift,Energetic,...Ready_For_It.wav
+Better Than Revenge,Taylor Swift,Energetic,Better_Than_Revenge.wav
+You Need To Calm Down,Taylor Swift,Happy,You_Need_To_Calm_Down.wav
+Getaway Car,Taylor Swift,Other,Getaway_Car.wav
+"You're On Your Own, Kid",Taylor Swift,Sad,"You're_On_Your_Own,_Kid.wav"
+Who’s Afraid of Little Old Me?,Taylor Swift,Other,Who’s_Afraid_of_Little_Old_Me.wav
+my tears ricochet,Taylor Swift,Sad,my_tears_ricochet.wav
+Down Bad,Taylor Swift,Sad,Down_Bad.wav
+Call It What You Want,Taylor Swift,Chill,Call_It_What_You_Want.wav
+Guilty as Sin?,Taylor Swift,Other,Guilty_as_Sin.wav
+You’re Losing Me (From The Vault),Taylor Swift,Sad,You’re_Losing_Me_(From_The_Vault).wav
+But Daddy I Love Him,Taylor Swift,Other,But_Daddy_I_Love_Him.wav
+Lavender Haze,Taylor Swift,Energetic,Lavender_Haze.wav
+Mine (Taylor's Version),Taylor Swift,Happy,Mine_(Taylor's_Version).wav
+All Of The Girls You Loved Before,Taylor Swift,Happy,All_Of_The_Girls_You_Loved_Before.wav
+The Tortured Poets Department,Taylor Swift,Other,The_Tortured_Poets_Department.wav
+I Can See You (Taylor’s Version) (From The Vault),Taylor Swift,Energetic,I_Can_See_You_(Taylor’s_Version)_(From_The_Vault).wav
+Midnight Rain,Taylor Swift,Sad,Midnight_Rain.wav
+22 (Taylor's Version),Taylor Swift,Happy,22_(Taylor's_Version).wav
+Back To December,Taylor Swift,Sad,Back_To_December.wav
+Welcome To New York,Taylor Swift,Happy,Welcome_To_New_York.wav
+Snow On The Beach (feat. More Lana Del Rey),Taylor Swift;Lana Del Rey,Chill,Snow_On_The_Beach_(feat._More_Lana_Del_Rey).wav
+Mean,Taylor Swift,Energetic,Mean.wav
+Clean (Taylor's Version),Taylor Swift,Sad,Clean_(Taylor's_Version).wav
+All You Had To Do Was Stay,Taylor Swift,Sad,All_You_Had_To_Do_Was_Stay.wav
+Bejeweled,Taylor Swift,Happy,Bejeweled.wav
+Paper Rings,Taylor Swift,Happy,Paper_Rings.wav
+The Man,Taylor Swift,Energetic,The_Man.wav
+If This Was A Movie (Taylor’s Version),Taylor Swift,Sad,If_This_Was_A_Movie_(Taylor’s_Version).wav
+Suburban Legends (Taylor's Version) (From The Vault),Taylor Swift,Chill,Suburban_Legends_(Taylor's_Version)_(From_The_Vault).wav
+Mr. Perfectly Fine (Taylor’s Version) (From The Vault),Taylor Swift,Sad,Mr._Perfectly_Fine_(Taylor’s_Version)_(From_The_Vault).wav
+Mastermind,Taylor Swift,Chill,Mastermind.wav
+Long Live (Taylor's Version),Taylor Swift,Happy,Long_Live_(Taylor's_Version).wav
+champagne problems,Taylor Swift,Sad,champagne_problems.wav
+exile (feat. Bon Iver),Taylor Swift;Bon Iver,Sad,exile_(feat._Bon_Iver).wav
+Red,Taylor Swift,Energetic,Red.wav
+Delicate - Recorded at The Tracking Room Nashville,Taylor Swift,Chill,Delicate_-_Recorded_at_The_Tracking_Room_Nashville.wav
+the 1,Taylor Swift,Sad,the_1.wav
+End Game,Taylor Swift;Ed Sheeran;Future,Energetic,End_Game.wav
+Nothing New (feat. Phoebe Bridgers) (Taylor’s Version) (From The Vault),Taylor Swift;Phoebe Bridgers,Sad,Nothing_New_(feat._Phoebe_Bridgers)_(Taylor’s_Version)_(From_The_Vault).wav
+September - Recorded at The Tracking Room Nashville,Taylor Swift,Happy,September_-_Recorded_at_The_Tracking_Room_Nashville.wav
+I Bet You Think About Me (feat. Chris Stapleton) (Taylor’s Version) (From The Vault),Taylor Swift;Chris Stapleton,Energetic,I_Bet_You_Think_About_Me_(feat._Chris_Stapleton)_(Taylor’s_Version)_(From_The_Vault).wav
+Fearless,Taylor Swift,Happy,Fearless.wav
+Miss Americana & The Heartbreak Prince,Taylor Swift,Other,Miss_Americana_&_The_Heartbreak_Prince.wav
+the last great american dynasty,Taylor Swift,Other,the_last_great_american_dynasty.wav
+The Archer,Taylor Swift,Sad,The_Archer.wav
+illicit affairs,Taylor Swift,Sad,illicit_affairs.wav
+Our Song,Taylor Swift,Happy,Our_Song.wav
+Death By A Thousand Cuts,Taylor Swift,Sad,Death_By_A_Thousand_Cuts.wav
+Crazier,Taylor Swift,Happy,Crazier.wav
+Year 3000,Jonas Brothers,Happy,Year_3000.wav
+What Dreams Are Made Of,Hilary Duff,Happy,What_Dreams_Are_Made_Of.wav
+The Climb,Miley Cyrus,Sad,The_Climb.wav
+Potential Breakup Song,Aly & AJ,Energetic,Potential_Breakup_Song.wav
+Introducing Me,Nick Jonas,Happy,Introducing_Me.wav
+Ordinary Girl,Hannah Montana,Chill,Ordinary_Girl.wav
+Gotta Go My Own Way,Zac Efron;Vanessa Hudgens;Disney,Sad,Gotta_Go_My_Own_Way.wav
+Determinate - From 'Lemonade Mouth',Adam Hicks;Bridgit Mendler;Naomi Scott;Hayley Kiyoko,Energetic,Determinate_-_From_'Lemonade_Mouth'.wav
+You Are the Music in Me,Troy;Gabriella,Happy,You_Are_the_Music_in_Me.wav
+S.O.S.,Jonas Brothers,Energetic,S.O.S..wav
+Lovebug,Jonas Brothers,Chill,Lovebug.wav
+He Could Be the One,Hannah Montana,Energetic,He_Could_Be_the_One.wav
+Beautiful Soul,Jesse McCartney,Chill,Beautiful_Soul.wav
+Wake Up,Hilary Duff,Energetic,Wake_Up.wav
+The Tide Is High - Radio Mix,Atomic Kitten,Happy,The_Tide_Is_High_-_Radio_Mix.wav
+This Is Me,Demi Lovato;Joe Jonas,Energetic,This_Is_Me.wav
+The Best of Both Worlds - From 'Hannah Montana'/Soundtrack Version,Hannah Montana,Happy,The_Best_of_Both_Worlds_-_From_'Hannah_Montana'_Soundtrack_Version.wav
+Amigas Cheetahs,The Cheetah Girls;Belinda,Energetic,Amigas_Cheetahs.wav
+Nobody's Perfect,Hannah Montana,Energetic,Nobody's_Perfect.wav
+Here We Go Again,Demi Lovato,Energetic,Here_We_Go_Again.wav
+Paranoid,Jonas Brothers,Sad,Paranoid.wav
+I'll Always Remember You,Hannah Montana,Sad,I'll_Always_Remember_You.wav
+If We Were A Movie - From 'Hannah Montana'/Soundtrack Version,Hannah Montana,Chill,If_We_Were_A_Movie_-_From_'Hannah_Montana'_Soundtrack_Version.wav
+One In a Million - From 'Hannah Montana 2',Hannah Montana,Chill,One_In_a_Million_-_From_'Hannah_Montana_2'.wav
+7 Things - Single Version,Miley Cyrus,Energetic,7_Things_-_Single_Version.wav
+La La Land,Demi Lovato,Energetic,La_La_Land.wav
+You'll Always Find Your Way Back Home,Hannah Montana,Happy,You'll_Always_Find_Your_Way_Back_Home.wav
+We Rock,Cast Of Camp Rock,Energetic,We_Rock.wav
+The In Crowd,Mitchel Musso,Other,The_In_Crowd.wav
+She's So Gone,Naomi Scott,Energetic,She's_So_Gone.wav
+Heard It On The Radio,Austin Moon,Chill,Heard_It_On_The_Radio.wav
+The Subway,Chappell Roan,Other,The_Subway.wav
