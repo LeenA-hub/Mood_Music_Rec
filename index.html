@@ -11,19 +11,22 @@
       align-items: center;
       height: 100vh;
       margin: 0;
-      background: #f4f4f4;
+      background: linear-gradient(135deg, #6c63ff, #48c6ef);
+      color: #333;
     }
-    .player {
+    .container {
       background: white;
       border-radius: 20px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      padding: 20px;
-      width: 300px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+      padding: 25px;
+      width: 320px;
       text-align: center;
+      animation: fadeIn 0.8s ease-in-out;
     }
     h1 {
-      font-size: 18px;
-      margin-bottom: 10px;
+      font-size: 20px;
+      margin-bottom: 15px;
+      color: #6c63ff;
     }
     input {
       width: 80%;
@@ -36,10 +39,11 @@
       background: #6c63ff;
       color: white;
       border: none;
-      padding: 10px;
+      padding: 10px 15px;
       border-radius: 10px;
       cursor: pointer;
       transition: background 0.3s;
+      margin: 5px;
     }
     button:hover {
       background: #5750e6;
@@ -48,42 +52,92 @@
       margin-top: 15px;
       text-align: left;
       font-size: 14px;
-      max-height: 120px;
+      max-height: 150px;
       overflow-y: auto;
+    }
+    audio {
+      width: 100%;
+      margin-top: 5px;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
 <body>
-  <div class="player">
-    <h1>Mood Music 🎵</h1>
+  <!-- Home Page -->
+  <div id="homePage" class="container">
+    <h1>🎵 Mood Music</h1>
+    <p>Find the perfect song for your mood!</p>
+    <button onclick="goToRecPage()">Start</button>
+    <button onclick="showLastMood()">Last Mood Results</button>
+  </div>
+
+  <!-- Recommendation Page -->
+  <div id="recPage" class="container" style="display:none;">
+    <h1>Mood Recommender</h1>
     <input type="text" id="moodInput" placeholder="Enter your mood">
     <button onclick="showRecommendations()">Generate</button>
     <div class="results" id="results"></div>
+    <button onclick="goHome()">⬅ Back</button>
   </div>
 
   <script>
-    // Hardcoded example songs
+    // Example songs (replace with your own + real file links)
     const songs = [
-      { title: "Year 3000", artist: "Jonas Brothers", mood: "energetic" },
-      { title: "The Climb", artist: "Miley Cyrus", mood: "happy" },
-      { title: "Potential Breakup Song", artist: "Aly & AJ", mood: "energetic" },
-      { title: "Gotta Go My Own Way", artist: "Zac & Vanessa", mood: "sad" },
+      { title: "Year 3000", artist: "Jonas Brothers", mood: "energetic", file: "year3000.mp3" },
+      { title: "The Climb", artist: "Miley Cyrus", mood: "happy", file: "climb.mp3" },
+      { title: "Potential Breakup Song", artist: "Aly & AJ", mood: "energetic", file: "breakup.mp3" },
+      { title: "Gotta Go My Own Way", artist: "Zac & Vanessa", mood: "sad", file: "ownway.mp3" },
     ];
+
+    function goToRecPage() {
+      document.getElementById("homePage").style.display = "none";
+      document.getElementById("recPage").style.display = "block";
+    }
+
+    function goHome() {
+      document.getElementById("recPage").style.display = "none";
+      document.getElementById("homePage").style.display = "block";
+    }
 
     function showRecommendations() {
       const mood = document.getElementById("moodInput").value.trim().toLowerCase();
       const resultsDiv = document.getElementById("results");
 
       if (!mood) {
-        resultsDiv.innerHTML = "Please enter a mood.";
+        resultsDiv.innerHTML = "⚠️ Please enter a mood.";
         return;
       }
 
       const matches = songs.filter(song => song.mood === mood);
       if (matches.length === 0) {
-        resultsDiv.innerHTML = "No songs found for mood: " + mood;
+        resultsDiv.innerHTML = "❌ No songs found for mood: " + mood;
       } else {
-        resultsDiv.innerHTML = matches.map(s => `🎵 ${s.title} - ${s.artist}`).join("<br>");
+        resultsDiv.innerHTML = matches.map(s =>
+          `🎵 <b>${s.title}</b> - ${s.artist}<br>
+           <audio controls>
+             <source src="${s.file}" type="audio/mpeg">
+             Your browser does not support audio.
+           </audio>`
+        ).join("<br><br>");
+      }
+
+      // Save last mood + results in localStorage
+      localStorage.setItem("lastMood", mood);
+      localStorage.setItem("lastResults", resultsDiv.innerHTML);
+    }
+
+    function showLastMood() {
+      const mood = localStorage.getItem("lastMood");
+      const results = localStorage.getItem("lastResults");
+
+      if (mood && results) {
+        goToRecPage();
+        document.getElementById("results").innerHTML = results;
+      } else {
+        alert("No previous results found.");
       }
     }
   </script>
