@@ -1,21 +1,22 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
 import java.io.*;
-import java.net.URI;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import javax.sound.sampled.*;
 
 public class MoodMusicRec {
     private JFrame frame; // main app window
     private JPanel listPanel; // songs display
-    private JTextField moodInput; // text field where user type the mood
+    private JTextField moodInput; // text field where user types the mood
 
     public MoodMusicRec() {
         initUI();
     }
 
+    // -------------------------------
+    // Start Screen
+    // -------------------------------
     private static void showStartScreen() {
         JFrame startFrame = new JFrame("Welcome");
         startFrame.setSize(400, 300);
@@ -38,6 +39,9 @@ public class MoodMusicRec {
         startFrame.setVisible(true);
     }
 
+    // -------------------------------
+    // Main UI
+    // -------------------------------
     private void initUI() {
         frame = new JFrame("Mood Music Player");
         frame.setSize(400, 300);
@@ -45,13 +49,13 @@ public class MoodMusicRec {
         frame.setLayout(new BorderLayout());
         frame.getContentPane().setBackground(Color.PINK);
 
-        // add title label at the top "MOOD MUSIC"
+        // title
         JLabel title = new JLabel("🎵 Mood Music", SwingConstants.CENTER);
         title.setFont(new Font("Arial", Font.BOLD, 26));
         title.setForeground(Color.WHITE);
         frame.add(title, BorderLayout.NORTH);
 
-        // button mood and button load playlist
+        // mood input + load button
         JPanel topPanel = new JPanel();
         topPanel.setBackground(Color.PINK);
         moodInput = new JTextField("happy", 10);
@@ -61,8 +65,7 @@ public class MoodMusicRec {
         topPanel.add(loadBtn);
         frame.add(topPanel, BorderLayout.SOUTH);
 
-        // list panel to show songs vertically and jscrolllpane so if there are many
-        // songs you can scroll
+        // list panel to show songs
         listPanel = new JPanel();
         listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
         listPanel.setBackground(Color.PINK);
@@ -70,8 +73,7 @@ public class MoodMusicRec {
         JScrollPane scrollPane = new JScrollPane(listPanel);
         frame.add(scrollPane, BorderLayout.CENTER);
 
-        // taken in user mood and load the song from the cvs file and passes them to
-        // showplaylist()
+        // when Load Playlist clicked → read CSV
         loadBtn.addActionListener(e -> {
             String mood = moodInput.getText().trim();
             showPlaylist(loadFromCSV("songs.csv", mood));
@@ -80,9 +82,9 @@ public class MoodMusicRec {
         frame.setVisible(true);
     }
 
-    // If no songs → show "No songs found...". Otherwise: For each song (Track):
-    // Create a row with label: title – artist [mood]. Add Spotify button → opens
-    // search for that song. Refresh panel to display new rows.
+    // -------------------------------
+    // Show Playlist
+    // -------------------------------
     private void showPlaylist(List<Track> playlist) {
         listPanel.removeAll();
         if (playlist.isEmpty()) {
@@ -93,12 +95,12 @@ public class MoodMusicRec {
                 songPanel.setBackground(Color.PINK);
 
                 JLabel lbl = new JLabel(t.title + " – " + t.artist + " [" + t.mood + "]");
-                JButton spotifyBtn = new JButton("Spotify 🎧");
+                JButton playBtn = new JButton("▶ Play");
 
-                spotifyBtn.addActionListener(e -> openSpotify(t));
+                playBtn.addActionListener(e -> openPlayerWindow(t));
 
                 songPanel.add(lbl);
-                songPanel.add(spotifyBtn);
+                songPanel.add(playBtn);
                 listPanel.add(songPanel);
             }
         }
@@ -106,26 +108,77 @@ public class MoodMusicRec {
         listPanel.repaint();
     }
 
-    // open spotify search for that song
-    private void openSpotify(Track t) {
-        try {
-            String query = URLEncoder.encode(t.title + " " + t.artist, "UTF-8");
-            Desktop.getDesktop().browse(new URI("https://open.spotify.com/search/" + query));
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+    // -------------------------------
+    // Player Window
+    // -------------------------------
+    private void openPlayerWindow(Track t) {
+        JFrame playerFrame = new JFrame("Now Playing");
+        playerFrame.setSize(400, 200);
+        playerFrame.setLayout(new BorderLayout());
+
+        JLabel songLabel = new JLabel("Playing: " + t.title + " – " + t.artist, SwingConstants.CENTER);
+        songLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        playerFrame.add(songLabel, BorderLayout.NORTH);
+
+        JPanel controls = new JPanel();
+        JButton playBtn = new JButton("Play");
+        JButton stopBtn = new JButton("Stop");
+        controls.add(playBtn);
+        controls.add(stopBtn);
+        playerFrame.add(controls, BorderLayout.CENTER);
+
+        // Holder for the currently playing clip
+        final Clip[] clipHolder = new Clip[1];
+
+        // Play button
+        playBtn.addActionListener(e -> {
+            try {
+                if (clipHolder[0] != null && clipHolder[0].isRunning()) {
+                    clipHolder[0].stop();
+                    clipHolder[0].close();
+                }
+
+                File file = new File(t.file); // use file path from CSV
+                if (!file.exists()) {
+                    JOptionPane.showMessageDialog(playerFrame,
+                            "File not found: " + t.file + "\nPlace the WAV in the correct folder.");
+                    return;
+                }
+
+                AudioInputStream audioStream = AudioSystem.getAudioInputStream(file);
+                Clip clip = AudioSystem.getClip();
+                clip.open(audioStream);
+                clip.start();
+                clipHolder[0] = clip;
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(playerFrame, "Error playing song: " + ex.getMessage());
+                ex.printStackTrace();
+            }
+        });
+
+        // Stop button
+        stopBtn.addActionListener(e -> {
+            if (clipHolder[0] != null) {
+                clipHolder[0].stop();
+                clipHolder[0].close();
+            }
+        });
+
+        playerFrame.setVisible(true);
     }
 
-    // --- CSV Loader ---
+    // -------------------------------
+    // CSV Loader
+    // -------------------------------
     public static List<Track> loadFromCSV(String filePath, String mood) {
         List<Track> tracks = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts.length >= 3) {
+                if (parts.length >= 4) {
                     if (parts[2].equalsIgnoreCase(mood)) {
-                        tracks.add(new Track(parts[0], parts[1], parts[2]));
+                        tracks.add(new Track(parts[0], parts[1], parts[2], parts[3]));
                     }
                 }
             }
@@ -135,20 +188,27 @@ public class MoodMusicRec {
         return tracks;
     }
 
+    // -------------------------------
+    // Main
+    // -------------------------------
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(MoodMusicRec::new);
+        SwingUtilities.invokeLater(MoodMusicRec::showStartScreen);
     }
 }
 
-// --- Track Class ---
+// -------------------------------
+// Track Class
+// -------------------------------
 class Track {
     String title;
     String artist;
     String mood;
+    String file; // path to WAV file
 
-    public Track(String title, String artist, String mood) {
+    public Track(String title, String artist, String mood, String file) {
         this.title = title;
         this.artist = artist;
         this.mood = mood;
+        this.file = file;
     }
 }
