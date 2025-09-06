@@ -138,7 +138,7 @@ public class MoodMusicRec {
                     clipHolder[0].close();
                 }
 
-                File file = new File(t.file); // use file path from CSV
+                File file = new File("music/" + t.file); // use file path from CSV
                 if (!file.exists()) {
                     JOptionPane.showMessageDialog(playerFrame,
                             "File not found: " + t.file + "\nPlace the WAV in the correct folder.");
