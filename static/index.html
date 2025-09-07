@@ -1,297 +1,163 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Pink Mood Player</title>
+  <meta charset="UTF-8">
+  <title>Mood Music Rec</title>
   <style>
-    :root{
-      --bg:#ffe4ef;      /* light pink background */
-      --card:#ffffff;    /* cards */
-      --ink:#2a2a2a;     /* text */
-      --pink:#ff7fbf;    /* primary pink */
-      --pink-2:#ffb3d9;  /* softer pink */
-      --line:#ffd6ea;    /* borders */
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #f5f5f5;
+      margin: 0;
+      padding: 0;
     }
-    *{ box-sizing:border-box; }
-    body{
-      margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background: var(--bg);
-      color: var(--ink);
-      display:flex; align-items:center; justify-content:center; min-height:100vh; padding:16px;
+    .container {
+      margin-top: 80px;
     }
-    .wrap{ width:100%; max-width:720px; display:grid; gap:12px; }
-    .card{
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius:12px;
-      padding:14px;
-      box-shadow: 0 4px 20px rgba(255,127,191,.12);
+    h1, h2 {
+      color: #333;
     }
-    h1{ margin:0 0 8px 0; font-size:20px; }
-    .row{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
-    input[type="text"]{
-      flex:1 1 220px; padding:10px 12px; border:1px solid var(--line); border-radius:10px; outline:none;
-      background:#fff;
+    .btn, button {
+      background: pink;
+      border: none;
+      padding: 12px 20px;
+      margin: 10px;
+      cursor: pointer;
+      border-radius: 6px;
+      font-size: 16px;
     }
-    button{
-      padding:10px 14px; border:1px solid var(--pink); background:var(--pink);
-      color:#fff; border-radius:10px; cursor:pointer; font-weight:600;
+    .btn:hover, button:hover {
+      background: hotpink;
+      color: white;
     }
-    button.secondary{ background:#fff; color:var(--pink); }
-    button:disabled{ opacity:.6; cursor:not-allowed; }
-    .results{ display:grid; gap:8px; max-height:260px; overflow:auto; }
-    .item{
-      display:flex; align-items:center; gap:10px; padding:10px; border:1px solid var(--line); border-radius:10px;
+    section {
+      display: none;
     }
-    .cover{ width:48px; height:48px; border-radius:8px; background:#f6f6f6; object-fit:cover; }
-    .meta{ display:flex; flex-direction:column; }
-    .title{ font-weight:600; }
-    .artist{ font-size:13px; opacity:.7; }
-    .pill{ margin-left:auto; font-size:12px; padding:4px 8px; border-radius:999px; background:var(--pink-2); color:#7a0043; }
-    .player{
-      display:flex; align-items:center; gap:12px;
+    section.active {
+      display: block;
     }
-    audio{ width:100%; }
-    small.muted{ color:#9a9a9a; }
+    #results button {
+      display: block;
+      margin: 10px auto;
+      width: 250px;
+    }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <!-- Auth -->
-    <div class="card" id="authCard">
-      <h1>Pink Mood Player</h1>
-      <div class="row">
-        <button id="loginBtn">Login with Spotify</button>
-        <button id="logoutBtn" class="secondary">Logout</button>
-        <div id="authStatus"><small class="muted">Not signed in</small></div>
-      </div>
-    </div>
 
-    <!-- Search -->
-    <div class="card">
-      <div class="row">
-        <input id="moodInput" type="text" placeholder="happy, sad, chill…" />
-        <button id="searchBtn">Find songs</button>
-        <button id="lastBtn" class="secondary">Last results</button>
-      </div>
-      <div id="hint"><small class="muted">Tip: you need to login to play previews.</small></div>
+  <!-- Front Page -->
+  <section id="front" class="active">
+    <div class="container">
+      <h1>Welcome to Mood Music Rec</h1>
+      <p>Find music that matches your mood 🎵</p>
+      <button class="btn" onclick="showPage('search')">Start</button>
     </div>
+  </section>
 
-    <!-- Results -->
-    <div class="card">
-      <div class="row" style="justify-content:space-between; width:100%;">
-        <strong>Results</strong>
-        <small class="muted" id="countLbl">0 items</small>
-      </div>
-      <div class="results" id="results"></div>
+  <!-- Search Mood Page -->
+  <section id="search">
+    <div class="container">
+      <h2>Select Your Mood</h2>
+      <input type="text" id="moodInput" placeholder="Enter mood (happy, sad, chill...)" />
+      <button onclick="searchMood()">Search</button>
+      <div id="results"></div>
+      <br>
+      <button class="btn" onclick="showPage('front')">⬅ Back</button>
     </div>
+  </section>
 
-    <!-- Mini Player -->
-    <div class="card" id="playerCard" style="display:none;">
-      <div class="player">
-        <img id="pCover" class="cover" alt="">
-        <div class="meta" style="min-width:160px;">
-          <div class="title" id="pTitle">—</div>
-          <div class="artist" id="pArtist">—</div>
-        </div>
-        <button id="prevBtn" class="secondary">⏮</button>
-        <button id="playBtn">▶</button>
-        <button id="nextBtn" class="secondary">⏭</button>
+  <!-- Music Player Page -->
+  <section id="music">
+    <div class="container">
+      <h2 id="songTitle">Now Playing: </h2>
+      <audio id="audioPlayer" controls>
+        <source id="audioSource" src="" type="audio/wav">
+        Your browser does not support the audio element.
+      </audio>
+      <div class="controls">
+        <button onclick="prevSong()">⏮ Prev</button>
+        <button onclick="nextSong()">⏭ Next</button>
       </div>
-      <div style="margin-top:8px;">
-        <audio id="player" controls preload="auto"></audio>
-      </div>
+      <br>
+      <button class="btn" onclick="showPage('search')">⬅ Back</button>
     </div>
-  </div>
+  </section>
 
   <script>
-    // ====== Spotify OAuth (Implicit Grant) ======
-    const clientId = "ae1da331b294421e9edb2d3e45bd1353";
-    const redirectUri = "http://localhost:8888/callback"; // must match Spotify app settings
-    const scopes = "user-read-email";
-
-    let accessToken = localStorage.getItem("sp_token") || "";
-
-    function authUrl(){
-      return `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scopes)}`;
-    }
-
-    // handle callback hash
-    if (location.hash.includes("access_token")) {
-      const params = new URLSearchParams(location.hash.slice(1));
-      const t = params.get("access_token");
-      if (t) {
-        accessToken = t;
-        localStorage.setItem("sp_token", t);
-      }
-      // optional: clean URL
-      history.replaceState(null, "", location.pathname);
-    }
-
-    const loginBtn = document.getElementById("loginBtn");
-    const logoutBtn = document.getElementById("logoutBtn");
-    const authStatus = document.getElementById("authStatus");
-
-    function updateAuthUI(){
-      if (accessToken) {
-        authStatus.innerHTML = `<small class="muted">Signed in ✔</small>`;
-        loginBtn.disabled = true;
-      } else {
-        authStatus.innerHTML = `<small class="muted">Not signed in</small>`;
-        loginBtn.disabled = false;
-      }
-    }
-    loginBtn.onclick = () => { location.href = authUrl(); };
-    logoutBtn.onclick = () => {
-      localStorage.removeItem("sp_token");
-      accessToken = "";
-      updateAuthUI();
-    };
-    updateAuthUI();
-
-    // ====== App State ======
-    const moodInput = document.getElementById("moodInput");
-    const searchBtn = document.getElementById("searchBtn");
-    const lastBtn = document.getElementById("lastBtn");
-    const resultsDiv = document.getElementById("results");
-    const countLbl = document.getElementById("countLbl");
-
-    const playerCard = document.getElementById("playerCard");
-    const pCover = document.getElementById("pCover");
-    const pTitle = document.getElementById("pTitle");
-    const pArtist = document.getElementById("pArtist");
-    const prevBtn = document.getElementById("prevBtn");
-    const playBtn = document.getElementById("playBtn");
-    const nextBtn = document.getElementById("nextBtn");
-    const audio = document.getElementById("player");
-
-    let currentPlaylist = [];
+    let songs = [];
     let currentIndex = 0;
+    let filteredSongs = [];
 
-    function renderResults(list){
-      countLbl.textContent = `${list.length} item${list.length!==1?'s':''}`;
-      resultsDiv.innerHTML = list.map((t, i) => `
-        <div class="item" data-idx="${i}">
-          <img src="${t.albumArt || ''}" class="cover" alt="">
-          <div class="meta">
-            <div class="title">${t.title}</div>
-            <div class="artist">${t.artist}</div>
-          </div>
-          <span class="pill">${String(i+1).padStart(2,'0')}</span>
-        </div>
-      `).join("");
+    // Load songs from CSV
+    async function loadSongs() {
+      try {
+        const response = await fetch("songs.csv");
+        const data = await response.text();
 
-      // click to play (if preview available)
-      [...resultsDiv.querySelectorAll(".item")].forEach(el=>{
-        el.addEventListener("click", ()=>{
-          const idx = Number(el.dataset.idx);
-          if (!currentPlaylist[idx].previewUrl) {
-            alert("No preview for this track.");
-            return;
-          }
-          currentIndex = idx;
-          loadTrack(currentPlaylist[currentIndex]);
+        const rows = data.trim().split("\n");
+        songs = rows.map(row => {
+          const [title, artist, mood, file] = row.split(",");
+          return { title, artist, mood: mood.toLowerCase(), file };
         });
+        console.log("Loaded songs:", songs);
+      } catch (error) {
+        console.error("Error loading songs.csv", error);
+      }
+    }
+
+    // Page navigation
+    function showPage(pageId) {
+      document.querySelectorAll("section").forEach(sec => sec.classList.remove("active"));
+      document.getElementById(pageId).classList.add("active");
+    }
+
+    // Search by mood
+    function searchMood() {
+      const mood = document.getElementById("moodInput").value.toLowerCase();
+      const resultsDiv = document.getElementById("results");
+      resultsDiv.innerHTML = "";
+
+      filteredSongs = songs.filter(s => s.mood === mood);
+
+      if (filteredSongs.length === 0) {
+        resultsDiv.innerHTML = "<p>No songs found for this mood 😢</p>";
+        return;
+      }
+
+      filteredSongs.forEach((song, index) => {
+        const btn = document.createElement("button");
+        btn.textContent = song.title + " - " + song.artist;
+        btn.onclick = () => playSong(index);
+        resultsDiv.appendChild(btn);
       });
     }
 
-    function showPlayer(){ playerCard.style.display = "block"; }
-    function hidePlayer(){ playerCard.style.display = "none"; }
-
-    function loadTrack(track){
-      showPlayer();
-      pCover.src = track.albumArt || "";
-      pTitle.textContent = track.title || "—";
-      pArtist.textContent = track.artist || "—";
-      audio.src = track.previewUrl || "";
-      playBtn.textContent = "⏸";
-      audio.play().catch(()=>{});
+    // Play a song
+    function playSong(index) {
+      currentIndex = index;
+      const song = filteredSongs[currentIndex];
+      document.getElementById("songTitle").innerText = "Now Playing: " + song.title;
+      document.getElementById("audioSource").src = song.file;
+      document.getElementById("audioPlayer").load();
+      document.getElementById("audioPlayer").play();
+      showPage('music');
     }
 
-    prevBtn.onclick = ()=>{
-      if (!currentPlaylist.length) return;
-      currentIndex = (currentIndex - 1 + currentPlaylist.length) % currentPlaylist.length;
-      loadTrack(currentPlaylist[currentIndex]);
-    };
-    nextBtn.onclick = ()=>{
-      if (!currentPlaylist.length) return;
-      currentIndex = (currentIndex + 1) % currentPlaylist.length;
-      loadTrack(currentPlaylist[currentIndex]);
-    };
-    playBtn.onclick = ()=>{
-      if (audio.paused){ audio.play(); playBtn.textContent="⏸"; }
-      else { audio.pause(); playBtn.textContent="▶"; }
-    };
-
-    audio.addEventListener("ended", ()=> nextBtn.click());
-
-    // ====== Search by Mood (Spotify) ======
-    async function searchSpotify(mood){
-      if (!accessToken) {
-        alert("Please login with Spotify first.");
-        return;
-      }
-      resultsDiv.innerHTML = `<small class="muted">Loading…</small>`;
-      try{
-        const res = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(mood)}&type=track&limit=12`,{
-          headers:{ Authorization:`Bearer ${accessToken}` }
-        });
-        const data = await res.json();
-        const items = data?.tracks?.items || [];
-        currentPlaylist = items
-          .filter(t=>t.preview_url)
-          .map(t=>({
-            title: t.name,
-            artist: (t.artists?.[0]?.name)||"Unknown",
-            previewUrl: t.preview_url,
-            albumArt: (t.album?.images?.[1]?.url) || (t.album?.images?.[0]?.url) || ""
-          }));
-        localStorage.setItem("lastMood", mood);
-        localStorage.setItem("lastPlaylist", JSON.stringify(currentPlaylist));
-        renderResults(currentPlaylist);
-        if (currentPlaylist.length){
-          currentIndex = 0;
-          loadTrack(currentPlaylist[0]);
-        } else {
-          hidePlayer();
-        }
-      }catch(e){
-        console.error(e);
-        resultsDiv.innerHTML = `<small class="muted">Error. Token may be expired.</small>`;
-      }
+    // Next & Prev controls
+    function nextSong() {
+      if (filteredSongs.length === 0) return;
+      currentIndex = (currentIndex + 1) % filteredSongs.length;
+      playSong(currentIndex);
     }
 
-    // UI handlers
-    searchBtn.onclick = ()=>{
-      const mood = moodInput.value.trim();
-      if (!mood) return;
-      searchSpotify(mood);
-    };
+    function prevSong() {
+      if (filteredSongs.length === 0) return;
+      currentIndex = (currentIndex - 1 + filteredSongs.length) % filteredSongs.length;
+      playSong(currentIndex);
+    }
 
-    lastBtn.onclick = ()=>{
-      const last = JSON.parse(localStorage.getItem("lastPlaylist")||"[]");
-      if (!last.length){
-        resultsDiv.innerHTML = `<small class="muted">No previous results.</small>`;
-        hidePlayer();
-        return;
-      }
-      currentPlaylist = last;
-      renderResults(currentPlaylist);
-      currentIndex = 0;
-      loadTrack(currentPlaylist[0]);
-    };
-
-    // restore last mood
-    (function init(){
-      const lastMood = localStorage.getItem("lastMood");
-      if (lastMood) moodInput.value = lastMood;
-      const last = JSON.parse(localStorage.getItem("lastPlaylist")||"[]");
-      if (last.length){
-        currentPlaylist = last;
-        renderResults(currentPlaylist);
-      }
-    })();
+    // Load CSV on startup
+    window.onload = loadSongs;
   </script>
 </body>
 </html>
